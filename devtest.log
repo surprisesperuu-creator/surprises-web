@@ -1,0 +1,11 @@
+▲ Next.js 16.3.0 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.18.14:3000
+✓ Ready in 536ms
+✓ Running next.config.ts took 38ms
+
+ GET / 200 in 451ms (next.js: 214ms, application-code: 237ms)
+ GET /carrito 200 in 96ms (next.js: 44ms, application-code: 53ms)
+ GET /tienda 200 in 122ms (next.js: 32ms, application-code: 90ms)
+[?25h
+[ELIFECYCLE] Command failed with exit code 4294967295.
