@@ -138,3 +138,4 @@ Los colores están disponibles como utilidades de Tailwind
 para títulos y destacados, e Inter (`--font-inter`, utilidad `font-sans`)
 para textos, navegación y UI.
 
+# surprises-web
