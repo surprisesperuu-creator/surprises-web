@@ -9,7 +9,6 @@ import {
   LoaderCircle,
   Lock,
   Mail,
-  ShieldCheck,
 } from "lucide-react";
 
 import { useAdminAuth } from "@/lib/admin/auth";
@@ -57,8 +56,6 @@ export default function AdminLoginPage() {
 
     setLoading(true);
     try {
-      // @TODO(Supabase Auth): esta llamada debe autenticar con Supabase Auth
-      // (signInWithPassword) y validar la sesión desde el servidor.
       await signIn(email.trim(), password);
       router.replace("/admin");
     } catch {
@@ -96,17 +93,6 @@ export default function AdminLoginPage() {
             <p className="mt-1 text-sm font-medium tracking-wide text-text/50">
               Panel de Administración
             </p>
-            <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-accent bg-accent/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-secondary">
-              <ShieldCheck className="size-3.5" />
-              Modo demostración
-            </span>
-          </div>
-
-          {/* Aviso: autenticación pendiente de Supabase Auth */}
-          <div className="mb-6 rounded-xl border border-accent/60 bg-cream px-4 py-3 text-xs leading-relaxed text-text/70">
-            La autenticación real se integrará con{" "}
-            <strong>Supabase Auth</strong>. Por ahora, cualquier email y
-            contraseña válidos abren el panel en modo local (sin seguridad real).
           </div>
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
@@ -210,4 +196,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-

@@ -5,6 +5,7 @@ import { ApiErrors } from "@/lib/api/errors";
 import { parseWithSchema, readJsonBody } from "@/lib/api/request";
 import { productService } from "@/services/product.service";
 import { createProductSchema } from "@/lib/validations/product.schema";
+import { requireAdminSession } from "@/lib/admin/session";
 
 /**
  * GET /api/products → lista productos con su categoría.
@@ -37,6 +38,7 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
   return apiHandler(async () => {
+    await requireAdminSession();
     const body = await readJsonBody(request);
     const input = parseWithSchema(createProductSchema, body);
     const product = await productService.create(input);

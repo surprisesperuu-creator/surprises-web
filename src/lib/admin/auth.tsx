@@ -9,99 +9,51 @@ import {
   type ReactNode,
 } from "react";
 
-/**
- * ============================================================
- * AUTENTICACIÓN DEL ADMIN — SOLO MODO DEMO LOCAL
- * ============================================================
- * El backend todavía NO tiene autenticación real: los endpoints
- * /api/categories y /api/products son públicos en esta fase.
- *
- * Para NO inventar un sistema de autenticación inseguro, este provider
- * NO valida credenciales contra ningún servidor. Guarda una sesión local
- * etiquetada como `isDemo: true` únicamente para poder navegar y probar
- * la interfaz del panel.
- *
- * Cuando se implemente autenticación real, reemplazar:
- *   - signIn / signOut → flujo de autenticación con sesión verificada
- *   - session → sesión validada en servidor (middleware / cookies HttpOnly)
- *   - el guard de rutas debe validar la sesión en el servidor, no en cliente.
- * ============================================================
- */
-
-const STORAGE_KEY = "surprises_admin_session";
+const SESSION_API = "/api/admin/auth";
 
 export interface AdminSession {
   email: string;
   name: string;
-  isDemo: boolean;
 }
 
 interface AdminAuthContextValue {
   session: AdminSession | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextValue | undefined>(
   undefined
 );
 
-function readStoredSession(): AdminSession | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return null;
-    }
-    const parsed = JSON.parse(raw) as AdminSession;
-    if (parsed && typeof parsed.email === "string" && parsed.isDemo) {
-      return parsed;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<AdminSession | null>(readStoredSession);
+export function AdminAuthProvider({
+  children,
+  initialSession,
+}: {
+  children: ReactNode;
+  initialSession: AdminSession | null;
+}) {
+  const [session, setSession] = useState<AdminSession | null>(initialSession);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    // El modo demo NO valida la contraseña en un servidor; solo exige que esté
-    // presente como salvaguarda (no es una autenticación real).
-    if (!password) {
-      throw new Error("La contraseña es obligatoria");
+    const response = await fetch(`${SESSION_API}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error("No se pudo iniciar sesión");
     }
 
-    // TODO: reemplazar el modo demo por autenticación verificada en el servidor.
-    // y persistir la sesión real (JWT) en cookies HttpOnly desde el servidor.
-    //
-    // Mientras tanto, un pequeño retraso simula la llamada de red para que
-    // la UI muestre el estado de loading de forma realista.
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
-    const localPart = email.split("@")[0] || "Administrador";
-    const demoSession: AdminSession = {
-      email,
-      name: localPart.charAt(0).toUpperCase() + localPart.slice(1),
-      isDemo: true,
-    };
-
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(demoSession));
-    } catch {
-      // localStorage no disponible: la sesión se mantiene en memoria.
-    }
-    setSession(demoSession);
+    const body: { data: AdminSession; error: null } = await response.json();
+    setSession(body.data);
   }, []);
 
-  const signOut = useCallback(() => {
-    try {
-      window.localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // noop
+  const signOut = useCallback(async () => {
+    const response = await fetch(`${SESSION_API}/logout`, { method: "POST" });
+    if (!response.ok) {
+      throw new Error("No se pudo cerrar sesión");
     }
     setSession(null);
   }, []);

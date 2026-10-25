@@ -3,6 +3,7 @@ import { success } from "@/lib/api/response";
 import { parseUuidId, parseWithSchema, readJsonBody } from "@/lib/api/request";
 import { productService } from "@/services/product.service";
 import { updateProductSchema } from "@/lib/validations/product.schema";
+import { requireAdminSession } from "@/lib/admin/session";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -26,6 +27,7 @@ export async function GET(_request: Request, context: RouteContext) {
  */
 export async function PUT(request: Request, context: RouteContext) {
   return apiHandler(async () => {
+    await requireAdminSession();
     const { id } = await context.params;
     const body = await readJsonBody(request);
     const input = parseWithSchema(updateProductSchema, body);
@@ -40,6 +42,7 @@ export async function PUT(request: Request, context: RouteContext) {
  */
 export async function DELETE(_request: Request, context: RouteContext) {
   return apiHandler(async () => {
+    await requireAdminSession();
     const { id } = await context.params;
     const parsedId = parseUuidId(id);
     await productService.remove(parsedId);

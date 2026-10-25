@@ -2,6 +2,7 @@ import { apiHandler } from "@/lib/api/handler";
 import { success } from "@/lib/api/response";
 import { ApiErrors } from "@/lib/api/errors";
 import { generateUploadSignature } from "@/lib/cloudinary/server";
+import { requireAdminSession } from "@/lib/admin/session";
 
 /**
  * POST /api/upload?folder=products|categories|hero
@@ -16,6 +17,7 @@ import { generateUploadSignature } from "@/lib/cloudinary/server";
  */
 export async function POST(request: Request) {
   return apiHandler(async () => {
+    await requireAdminSession();
     const { searchParams } = new URL(request.url);
     const folder = searchParams.get("folder") ?? "products";
 

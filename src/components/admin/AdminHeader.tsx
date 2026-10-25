@@ -2,21 +2,28 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ExternalLink, LogOut, Menu, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { ExternalLink, LogOut, Menu } from "lucide-react";
 
 import { useAdminAuth } from "@/lib/admin/auth";
 
 export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const { session, signOut } = useAdminAuth();
   const router = useRouter();
+  const [logoutError, setLogoutError] = useState(false);
 
-  const handleLogout = () => {
-    signOut();
-    router.replace("/admin/login");
+  const handleLogout = async () => {
+    setLogoutError(false);
+    try {
+      await signOut();
+      router.replace("/admin/login");
+    } catch {
+      setLogoutError(true);
+    }
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-primary/10 bg-white/85 px-4 backdrop-blur sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 flex min-h-16 items-center gap-3 border-b border-primary/10 bg-white/85 px-4 backdrop-blur sm:px-6 lg:px-8">
       <button
         type="button"
         onClick={onMenuClick}
@@ -26,11 +33,10 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
         <Menu className="size-5" />
       </button>
 
-      {session?.isDemo && (
-        <span className="hidden items-center gap-1.5 rounded-full border border-accent bg-accent/30 px-3 py-1 text-xs font-medium text-secondary sm:inline-flex">
-          <Sparkles className="size-3.5" />
-          Modo demo
-        </span>
+      {logoutError && (
+        <p role="alert" className="text-xs text-red-700">
+          No se pudo cerrar sesión. Inténtalo nuevamente.
+        </p>
       )}
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3">

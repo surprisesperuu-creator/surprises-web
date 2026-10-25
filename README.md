@@ -38,6 +38,11 @@ DIRECT_URL=postgresql://USER:PASSWORD@db.prisma.io:5432/postgres?sslmode=require
 CLOUDINARY_CLOUD_NAME=tu-cloud-name
 CLOUDINARY_API_KEY=tu-api-key
 CLOUDINARY_API_SECRET=tu-api-secret
+
+# Acceso al panel de administración (solo servidor)
+ADMIN_EMAIL=tu-correo-de-administracion
+ADMIN_PASSWORD=una-contrasena-larga-y-unica
+ADMIN_SESSION_SECRET=secreto-aleatorio-de-al-menos-32-caracteres
 ```
 
 Las conexiones de base de datos y `CLOUDINARY_API_SECRET` solo se usan en el
@@ -45,6 +50,14 @@ servidor; nunca deben llevar el prefijo `NEXT_PUBLIC_` ni exponerse al cliente.
 En desarrollo, configura estos valores en `.env.local`. Reemplaza los
 marcadores con las conexiones generadas en Prisma Console; no reutilices la
 URL de Supabase como destino.
+
+Configura también `ADMIN_EMAIL`, `ADMIN_PASSWORD` y `ADMIN_SESSION_SECRET` en
+`.env.local` antes de iniciar sesión. Genera un secreto aleatorio con
+`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` y
+usa una contraseña única. No compartas estos valores ni los subas al repositorio.
+En producción, configúralos como variables privadas del proveedor de hosting.
+El panel y las operaciones de escritura requieren una cookie de sesión firmada;
+las consultas públicas de la tienda siguen disponibles sin iniciar sesión.
 
 ## Base de datos
 
@@ -92,9 +105,8 @@ de producción deben aplicarse explícitamente desde un entorno controlado con
 `pnpm db:migrate:status` y luego `pnpm db:migrate:deploy`; no las conectes al
 comando de build/deploy automático.
 
-La autenticación administrativa actual sigue siendo una sesión local de
-demostración. Los endpoints existentes no verifican autorización de admin;
-esta migración no añade ni cambia autenticación.
+La sesión administrativa se almacena localmente. Los endpoints existentes no
+verifican autorización de admin; esta migración no añade ni cambia autenticación.
 
 ## API
 

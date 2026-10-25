@@ -26,6 +26,10 @@ export const ApiErrors = {
   notFound: (resource = "Recurso") =>
     new ApiError(404, "NOT_FOUND", `${resource} no encontrado`),
 
+  /** 401 → sesión administrativa ausente o credenciales inválidas. */
+  unauthorized: (message = "No autorizado") =>
+    new ApiError(401, "UNAUTHORIZED", message),
+
   /** 409 → conflicto (p. ej. slug duplicado o registro en uso). */
   conflict: (message: string) => new ApiError(409, "CONFLICT", message),
 

@@ -3,6 +3,7 @@ import { success } from "@/lib/api/response";
 import { parseWithSchema, readJsonBody } from "@/lib/api/request";
 import { heroSlideService } from "@/services/hero-slide.service";
 import { createHeroSlideSchema } from "@/lib/validations/hero-slide.schema";
+import { requireAdminSession } from "@/lib/admin/session";
 
 /**
  * GET /api/hero-slides → lista las imágenes del Hero (orden del carrusel:
@@ -21,6 +22,7 @@ export async function GET() {
  */
 export async function POST(request: Request) {
   return apiHandler(async () => {
+    await requireAdminSession();
     const body = await readJsonBody(request);
     const input = parseWithSchema(createHeroSlideSchema, body);
     const slide = await heroSlideService.create(input);
