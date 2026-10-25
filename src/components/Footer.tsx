@@ -59,7 +59,7 @@ export default function Footer() {
                 <div className="flex flex-col gap-4">
                     <Link href="/" className="flex w-fit items-center gap-3">
                         <Image
-                            src="/head.png"
+                            src="/surprises.png"
                             alt="Surprises"
                             width={44}
                             height={44}
@@ -69,10 +69,6 @@ export default function Footer() {
                             Surprises
                         </span>
                     </Link>
-
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-white">
-                        <ShoppingCart size={20} />
-                    </div>
 
                     <p className="text-stone-200/80 text-sm leading-relaxed">
                         Creando detalles únicos y momentos inolvidables. Regalos boutique con
@@ -128,11 +124,11 @@ export default function Footer() {
                     <ul className="flex flex-col gap-3 text-sm">
                         <li>
                             <a
-                                href="mailto:hola@surprises.pe"
+                                href="surprisesperuu@gmail.com"
                                 className="flex items-center gap-2.5 text-stone-200/80 hover:text-pink-300 transition-colors w-fit"
                             >
                                 <Mail size={16} className="text-pink-300 shrink-0" />
-                                <span>hola@surprises.pe</span>
+                                <span>surprisesperuu@gmail.com</span>
                             </a>
                         </li>
                         <li>
@@ -143,7 +139,7 @@ export default function Footer() {
                                 className="flex items-center gap-2.5 text-stone-200/80 hover:text-pink-300 transition-colors w-fit"
                             >
                                 <MessageCircle size={16} className="text-pink-300 shrink-0" />
-                                <span>+51 999 999 999</span>
+                                <span>+51 937 367 304</span>
                             </a>
                         </li>
                         <li className="flex items-start gap-2.5 text-stone-200/80">
