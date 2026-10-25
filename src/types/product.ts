@@ -1,10 +1,8 @@
 import type { Category } from "./category";
 
 /**
- * Entidad Producto tal como se almacena en Supabase.
- *
- * Nota: la columna `price` es `numeric` en Postgres y Supabase la devuelve
- * como string; los servicios la convierten a número antes de responder.
+ * Entidad Producto tal como se expone en las respuestas de la API.
+ * `price` se devuelve como número y los timestamps como cadenas ISO.
  */
 export interface Product {
   id: string;

@@ -9,7 +9,7 @@ inolvidables para sorprender a quien más quieres.
 - React
 - TypeScript
 - [Tailwind CSS](https://tailwindcss.com) v4
-- Supabase (PostgreSQL)
+- [Prisma ORM](https://www.prisma.io/orm) con Prisma Postgres
 - Cloudinary
 - [pnpm](https://pnpm.io)
 
@@ -20,6 +20,8 @@ pnpm dev    # servidor de desarrollo
 pnpm build  # build de producción
 pnpm start  # sirve el build de producción
 pnpm lint   # análisis de código con ESLint
+pnpm db:generate        # genera Prisma Client
+pnpm db:migrate:status  # consulta el estado (requiere DIRECT_URL)
 ```
 
 ## Variables de entorno
@@ -27,10 +29,10 @@ pnpm lint   # análisis de código con ESLint
 Copia `.env.example` a `.env.local` y completa los valores.
 
 ```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-public-key
-SUPABASE_SERVICE_ROLE_KEY=tu-service-role-key   # SOLO servidor
+# Prisma Postgres: copiar ambas conexiones desde Prisma Console.
+# Usar la URL pooled para la aplicación y la URL directa para migraciones.
+DATABASE_URL=postgresql://USER:PASSWORD@pooled.db.prisma.io:5432/postgres?sslmode=require
+DIRECT_URL=postgresql://USER:PASSWORD@db.prisma.io:5432/postgres?sslmode=require
 
 # Cloudinary (SOLO servidor)
 CLOUDINARY_CLOUD_NAME=tu-cloud-name
@@ -38,20 +40,61 @@ CLOUDINARY_API_KEY=tu-api-key
 CLOUDINARY_API_SECRET=tu-api-secret
 ```
 
-`NEXT_PUBLIC_*` son públicas (van al navegador). Las claves secretas
-(`SUPABASE_SERVICE_ROLE_KEY`, `CLOUDINARY_API_SECRET`) solo se usan en el
-servidor y jamás deben exponerse al cliente.
+Las conexiones de base de datos y `CLOUDINARY_API_SECRET` solo se usan en el
+servidor; nunca deben llevar el prefijo `NEXT_PUBLIC_` ni exponerse al cliente.
+En desarrollo, configura estos valores en `.env.local`. Reemplaza los
+marcadores con las conexiones generadas en Prisma Console; no reutilices la
+URL de Supabase como destino.
 
 ## Base de datos
 
-Las migraciones están en `supabase/migrations/`. Incluyen:
+El esquema y las migraciones nuevas están en `prisma/`. La migración inicial
+conserva el modelo descrito por las migraciones de origen en
+`supabase/migrations/`:
 
-- Tabla `categories` (slug UNIQUE, timestamps, `is_active` default `true`)
-- Tabla `products` (`category_id` → FK a `categories`, `price >= 0`, timestamps)
+- Tabla `categories` (slug único y en minúsculas, nombre no vacío, timestamps)
+- Tabla `products` (`category_id` → FK restrictiva a `categories`,
+  `price >= 0`, nombre no vacío y timestamps)
+- Tabla `hero_slides` (orden no negativo, texto requerido y timestamps)
 - Relación `categories 1 ─── N products`
-- Índices y trigger de `updated_at`
-- RLS habilitado: el rol `anon` solo puede LEER elementos activos; las
-  operaciones de escritura usan la service role key.
+- Índices y trigger de `updated_at` en las tres tablas
+
+Las migraciones antiguas de `supabase/migrations/` se conservan solo como
+referencia del esquema de origen; no se ejecutan en el destino. Los datos
+existentes no se copian automáticamente. Tras verificar el esquema y tener
+ambas conexiones, prepara `.env.local` con `SOURCE_DATABASE_URL` (origen,
+solo lectura), `DATABASE_URL` (destino pooled) y `DIRECT_URL` (destino
+directo), y sigue este orden:
+
+```bash
+pnpm db:generate
+pnpm db:migrate:status
+pnpm db:migrate:deploy
+pnpm db:migrate:data
+```
+
+`db:migrate:deploy` aplica solo migraciones pendientes y no se ejecuta durante
+el build de Vercel. Revisa primero `pnpm db:migrate:status` y el SQL, verifica
+que `DIRECT_URL` apunta al destino correcto y respalda ambas bases. La
+importación lee el origen en una transacción consistente e inserta en el
+destino dentro de otra transacción; no actualiza ni elimina registros. Un
+conflicto de clave única/FK aborta la transacción sin sobrescribir filas.
+Mantén pausadas las escrituras al origen durante la importación final para
+evitar cambios concurrentes posteriores a la copia.
+
+## Despliegue en Vercel
+
+Configura `DATABASE_URL` con la conexión pooled de Prisma Console y
+`DIRECT_URL` con la conexión directa, ambas con `sslmode=require`, en las
+variables de entorno de Production (y Preview si corresponde). El script
+`pnpm build` genera Prisma Client antes del build de Next.js. Las migraciones
+de producción deben aplicarse explícitamente desde un entorno controlado con
+`pnpm db:migrate:status` y luego `pnpm db:migrate:deploy`; no las conectes al
+comando de build/deploy automático.
+
+La autenticación administrativa actual sigue siendo una sesión local de
+demostración. Los endpoints existentes no verifican autorización de admin;
+esta migración no añade ni cambia autenticación.
 
 ## API
 
@@ -102,7 +145,8 @@ src/
 │       └── products/     # Route Handlers de productos
 ├── lib/
 │   ├── api/              # errores, respuestas y handler común
-│   ├── supabase/         # clientes de Supabase (browser y server)
+│   ├── prisma.ts         # cliente Prisma singleton, solo servidor
+│   ├── database-errors.ts # errores PostgreSQL/Prisma a respuestas API
 │   ├── cloudinary/       # integración backend de Cloudinary
 │   └── validations/      # esquemas Zod
 ├── services/             # lógica de negocio (categorías y productos)

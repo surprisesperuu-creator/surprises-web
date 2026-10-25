@@ -1,5 +1,6 @@
-import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { handleDatabaseError } from "@/lib/supabase/errors";
+import { Prisma, type Product as PrismaProduct } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
+import { handleDatabaseError } from "@/lib/database-errors";
 import { ApiErrors } from "@/lib/api/errors";
 import type { Product, ProductWithCategory } from "@/types/product";
 import type { CategorySummary } from "@/types/product";
@@ -8,30 +9,36 @@ import type {
   UpdateProductInput,
 } from "@/lib/validations/product.schema";
 
-/**
- * Fila de producto tal como la devuelve Supabase: `price` (numeric) es string.
- */
-type ProductRow = Omit<Product, "price"> & { price: string };
+const categorySelect = {
+  id: true,
+  name: true,
+  slug: true,
+  image_url: true,
+} as const;
 
-/**
- * Fila de producto con la categoría embebida (join).
- */
-type ProductWithCategoryRow = Omit<ProductWithCategory, "price" | "category"> & {
-  price: string;
-  category: CategorySummary | null;
-};
+type ProductWithCategoryRow = Prisma.ProductGetPayload<{
+  include: { category: { select: typeof categorySelect } };
+}>;
 
-function mapProductRow(row: ProductRow): Product {
-  return { ...row, price: Number(row.price) };
+function mapProductRow(row: PrismaProduct): Product {
+  return {
+    ...row,
+    price: Number(row.price),
+    created_at: row.created_at.toISOString(),
+    updated_at: row.updated_at.toISOString(),
+  };
 }
 
 function mapProductWithCategoryRow(row: ProductWithCategoryRow): ProductWithCategory {
-  return { ...row, price: Number(row.price) };
+  return {
+    ...mapProductRow(row),
+    category: row.category,
+  };
 }
 
 /**
  * Lógica de negocio de productos. Se ejecuta siempre en el servidor
- * usando la service role key (operaciones administrativas).
+ * usando la conexión PostgreSQL del servidor.
  */
 export const productService = {
   /**
@@ -39,39 +46,21 @@ export const productService = {
    * Filtro opcional por categoría (`category_id`).
    */
   async getAll(categoryId?: string): Promise<ProductWithCategory[]> {
-    let query = getSupabaseServerClient()
-      .from("products")
-      .select("*, category:categories(id, name, slug, image_url)");
+    const data = await prisma.product.findMany({
+      where: categoryId ? { category_id: categoryId } : undefined,
+      include: { category: { select: categorySelect } },
+      orderBy: { created_at: "desc" },
+    });
 
-    if (categoryId) {
-      query = query.eq("category_id", categoryId);
-    }
-
-    const { data, error } = await query.order("created_at", { ascending: false });
-
-    if (error) {
-      // PGRST205 = las tablas aún no existen en Supabase (proyecto vacío).
-      // Se devuelve lista vacía para mostrar el estado "sin productos".
-      if (error.code === "PGRST205") {
-        return [];
-      }
-      handleDatabaseError(error, { resource: "Producto" });
-    }
-
-    return (data ?? []).map(mapProductWithCategoryRow);
+    return data.map(mapProductWithCategoryRow);
   },
 
   /** Obtiene un producto con su categoría (404 si no existe). */
   async getById(id: string): Promise<ProductWithCategory> {
-    const { data, error } = await getSupabaseServerClient()
-      .from("products")
-      .select("*, category:categories(id, name, slug, image_url)")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error) {
-      handleDatabaseError(error, { resource: "Producto" });
-    }
+    const data = await prisma.product.findUnique({
+      where: { id },
+      include: { category: { select: categorySelect } },
+    });
     if (!data) {
       throw ApiErrors.notFound("Producto");
     }
@@ -83,17 +72,12 @@ export const productService = {
   async create(input: CreateProductInput): Promise<Product> {
     await assertCategoryExists(input.category_id);
 
-    const { data, error } = await getSupabaseServerClient()
-      .from("products")
-      .insert(input)
-      .select("*")
-      .single();
-
-    if (error) {
+    try {
+      const data = await prisma.product.create({ data: input });
+      return mapProductRow(data);
+    } catch (error) {
       handleDatabaseError(error, { resource: "Producto" });
     }
-
-    return mapProductRow(data);
   },
 
   /** Actualiza un producto (404 si no existe; 400 si la categoría no existe). */
@@ -102,37 +86,23 @@ export const productService = {
       await assertCategoryExists(input.category_id);
     }
 
-    const { data, error } = await getSupabaseServerClient()
-      .from("products")
-      .update(input)
-      .eq("id", id)
-      .select("*")
-      .maybeSingle();
-
-    if (error) {
+    try {
+      const data = await prisma.product.update({
+        where: { id },
+        data: input,
+      });
+      return mapProductRow(data);
+    } catch (error) {
       handleDatabaseError(error, { resource: "Producto" });
     }
-    if (!data) {
-      throw ApiErrors.notFound("Producto");
-    }
-
-    return mapProductRow(data);
   },
 
   /** Elimina un producto (404 si no existe). */
   async remove(id: string): Promise<void> {
-    const { data, error } = await getSupabaseServerClient()
-      .from("products")
-      .delete()
-      .eq("id", id)
-      .select("id")
-      .maybeSingle();
-
-    if (error) {
+    try {
+      await prisma.product.delete({ where: { id } });
+    } catch (error) {
       handleDatabaseError(error, { resource: "Producto" });
-    }
-    if (!data) {
-      throw ApiErrors.notFound("Producto");
     }
   },
 };
@@ -142,15 +112,10 @@ export const productService = {
  * Lanza 400 VALIDATION_ERROR si no existe.
  */
 async function assertCategoryExists(categoryId: string): Promise<void> {
-  const { data, error } = await getSupabaseServerClient()
-    .from("categories")
-    .select("id")
-    .eq("id", categoryId)
-    .maybeSingle();
-
-  if (error) {
-    handleDatabaseError(error, { resource: "Categoría" });
-  }
+  const data = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { id: true },
+  });
   if (!data) {
     throw ApiErrors.validation("La categoría indicada no existe");
   }

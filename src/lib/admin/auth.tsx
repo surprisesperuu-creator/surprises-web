@@ -11,7 +11,7 @@ import {
 
 /**
  * ============================================================
- * AUTENTICACIÓN DEL ADMIN — PENDIENTE DE SUPABASE AUTH
+ * AUTENTICACIÓN DEL ADMIN — SOLO MODO DEMO LOCAL
  * ============================================================
  * El backend todavía NO tiene autenticación real: los endpoints
  * /api/categories y /api/products son públicos en esta fase.
@@ -21,10 +21,9 @@ import {
  * etiquetada como `isDemo: true` únicamente para poder navegar y probar
  * la interfaz del panel.
  *
- * Cuando se implemente Supabase Auth, reemplazar:
- *   - signIn  → supabase.auth.signInWithPassword({ email, password })
- *   - signOut → supabase.auth.signOut()
- *   - session → sesión verificada en servidor (middleware / cookies HttpOnly)
+ * Cuando se implemente autenticación real, reemplazar:
+ *   - signIn / signOut → flujo de autenticación con sesión verificada
+ *   - session → sesión validada en servidor (middleware / cookies HttpOnly)
  *   - el guard de rutas debe validar la sesión en el servidor, no en cliente.
  * ============================================================
  */
@@ -71,12 +70,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     // El modo demo NO valida la contraseña en un servidor; solo exige que esté
-    // presente como salvaguarda (la validación fuerte llegará con Supabase Auth).
+    // presente como salvaguarda (no es una autenticación real).
     if (!password) {
       throw new Error("La contraseña es obligatoria");
     }
 
-    // @TODO(Supabase Auth): reemplazar por supabase.auth.signInWithPassword({ email, password })
+    // TODO: reemplazar el modo demo por autenticación verificada en el servidor.
     // y persistir la sesión real (JWT) en cookies HttpOnly desde el servidor.
     //
     // Mientras tanto, un pequeño retraso simula la llamada de red para que

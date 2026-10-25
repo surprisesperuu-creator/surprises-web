@@ -6,7 +6,7 @@ import type { CartItem } from "@/store/cart.store";
  * No debe hardcodearse en los componentes.
  */
 export const WHATSAPP_NUMBER: string =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
+  process.env.WHATSAPP_NUMBER ?? "";
 
 /**
  * Construye el mensaje del pedido para WhatsApp a partir del carrito.

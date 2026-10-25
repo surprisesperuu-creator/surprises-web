@@ -10,6 +10,7 @@ import {
     MessageCircle,
     QrCode,
     ShoppingBag,
+    ShoppingCart,
     Store,
 } from "lucide-react";
 
@@ -40,7 +41,7 @@ const SOCIALS = [
 export default function Footer() {
     const year = new Date().getFullYear();
     const whatsappNumber =
-        process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51999999999";
+        process.env.WHATSAPP_NUMBER ?? "51999999999";
 
     return (
         <footer className="relative w-full overflow-hidden bg-[#2B0A1A] text-stone-50">
@@ -68,6 +69,10 @@ export default function Footer() {
                             Surprises
                         </span>
                     </Link>
+
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-white">
+                        <ShoppingCart size={20} />
+                    </div>
 
                     <p className="text-stone-200/80 text-sm leading-relaxed">
                         Creando detalles únicos y momentos inolvidables. Regalos boutique con

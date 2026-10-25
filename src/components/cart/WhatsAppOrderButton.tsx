@@ -22,7 +22,7 @@ export function WhatsAppOrderButton() {
       <button
         type="button"
         disabled
-        title="Configura la variable NEXT_PUBLIC_WHATSAPP_NUMBER"
+        title="Configura la variable WHATSAPP_NUMBER"
         className={`${classes} cursor-not-allowed opacity-50`}
       >
         <WhatsAppIcon />

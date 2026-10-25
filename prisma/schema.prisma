@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @db.Text
+  slug        String    @unique @db.Text
+  description String?   @db.Text
+  image_url   String?   @db.Text
+  is_active   Boolean   @default(true)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+  products    Product[]
+
+  @@index([is_active], map: "idx_categories_is_active")
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  category_id String   @db.Uuid
+  name        String   @db.Text
+  price       Decimal  @db.Decimal(12, 2)
+  image_url   String?  @db.Text
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Restrict)
+
+  @@index([category_id], map: "idx_products_category_id")
+  @@index([is_active], map: "idx_products_is_active")
+  @@map("products")
+}
+
+model HeroSlide {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title      String   @db.Text
+  image_url  String   @db.Text
+  sort_order Int      @default(0)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([is_active], map: "idx_hero_slides_is_active")
+  @@index([sort_order], map: "idx_hero_slides_sort_order")
+  @@map("hero_slides")
+}

@@ -1,5 +1,5 @@
 /**
- * Entidad Categoría tal como se almacena en Supabase.
+ * Entidad Categoría tal como se expone en las respuestas de la API.
  */
 export interface Category {
   id: string;
