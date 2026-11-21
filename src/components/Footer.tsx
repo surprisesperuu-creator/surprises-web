@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WHATSAPP_NUMBER } from "@/lib/store/whatsapp";
 import Image from "next/image";
 import {
     Clock,
@@ -40,8 +41,7 @@ const SOCIALS = [
 
 export default function Footer() {
     const year = new Date().getFullYear();
-    const whatsappNumber =
-        process.env.WHATSAPP_NUMBER ?? "51999999999";
+    const whatsappNumber = WHATSAPP_NUMBER;
 
     return (
         <footer className="relative w-full overflow-hidden bg-[#2B0A1A] text-stone-50">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { WHATSAPP_NUMBER } from "@/lib/store/whatsapp";
 import {
   ArrowRight,
   Heart,
@@ -69,7 +70,7 @@ export default function Home() {
               </Link>
 
               <a
-                href="https://wa.me/"
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("¡Hola! Quiero ver sus regalos 🎁")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-8 py-4 bg-white/90 hover:bg-stone-50 transition-all duration-200 rounded-full shadow-sm outline outline-2 -outline-offset-2 outline-pink-800 flex items-center justify-center gap-2 active:scale-95"
