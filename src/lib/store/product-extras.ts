@@ -18,6 +18,17 @@ const DESCRIPCIONES: Record<string, string> = {
     "",
     "Escríbenos al WhatsApp para separarlo 📲",
   ].join("\n"),
+  // Cuadro 3D Navideño con luces
+  "c978682a-3049-4769-9fca-c96f0c16dac3": [
+    "Su cuadro 3D navideño con SUS fotos, arbolito y luces, en una caja lista para regalar 🎄🎁",
+    "",
+    "✔️ Personalizado con sus fotos",
+    "✔️ Hecho a mano, detalle por detalle",
+    "✔️ Se ilumina con lucecitas ✨",
+    "🎁 Si lo separas ahora, la carta de Navidad y el mini calendario 2027 van de regalo 💌",
+    "",
+    "Escríbenos al WhatsApp y separa el tuyo: los pedidos de Navidad se están llenando 📲",
+  ].join("\n"),
 };
 
 const CLOUDINARY = "https://res.cloudinary.com/lnofvbec/image/upload";
@@ -28,6 +39,12 @@ const FOTOS: Record<string, string[]> = {
     `${CLOUDINARY}/v1795314884/surprises/products/geqwg6tjdhsjxb09trgs.jpg`,
     `${CLOUDINARY}/v1795314885/surprises/products/el89r7urt4lawxmlon9t.jpg`,
     `${CLOUDINARY}/v1795314886/surprises/products/z0xhwiu41llzmspv5mvh.jpg`,
+  ],
+  // Cuadro 3D Navideño con luces: de cerca, con lazo y carta de Navidad
+  "c978682a-3049-4769-9fca-c96f0c16dac3": [
+    `${CLOUDINARY}/v1795314888/surprises/products/v7frmbxucsglwq3vvb7j.jpg`,
+    `${CLOUDINARY}/v1795314888/surprises/products/q3yffvtzzh7uz6zknwql.jpg`,
+    `${CLOUDINARY}/v1795314889/surprises/products/idcqvfuk1pxfco1qs18w.jpg`,
   ],
 };
 
