@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link";
 import Image from "next/image";
-import { Search, ShoppingCart, Menu, X, House, Gift, ChevronRight } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, House, Gift, ChevronRight, Sparkles, CalendarHeart, TreePine, MessageCircle } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
@@ -11,6 +11,7 @@ import { AppImage } from "@/components/AppImage";
 import { buildWhatsAppUrl } from "@/lib/store/whatsapp";
 import { storeApi } from "@/lib/store/api";
 import { formatPrice } from "@/lib/format";
+import { PROPUESTAS } from "@/lib/store/home-content";
 import type { ProductWithCategory } from "@/types/product";
 
 function normalizeText(value: string): string {
@@ -147,129 +148,141 @@ export default function Header() {
 
     const menuItems = [
         { href: "/", label: "Inicio", icon: House },
-        { href: "/tienda", label: "Tienda", icon: Gift },
+        { href: "/tienda", label: "Todos los regalos", icon: Gift },
+        { href: "/tienda?q=navide", label: "Navidad", icon: TreePine },
+        { href: "/tienda?q=cuadro", label: "Cuadros 3D", icon: Sparkles },
+        { href: "/tienda?q=calendario", label: "Calendarios", icon: CalendarHeart },
     ];
 
+    // Barra superior: en el celular rota una frase; en escritorio se ven todas.
+    const [propuesta, setPropuesta] = useState(0);
+    useEffect(() => {
+        const timer = window.setInterval(() => setPropuesta((i) => (i + 1) % PROPUESTAS.length), 3500);
+        return () => window.clearInterval(timer);
+    }, []);
+
+    const searchInput = (box: "mobile" | "desktop") => (
+        <form
+            className="relative w-full"
+            role="search"
+            onSubmit={(event) => {
+                event.preventDefault();
+                goToSearch(query);
+            }}
+        >
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A01C46]" />
+            <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                onFocus={() => handleFocus(box)}
+                onBlur={handleBlur}
+                placeholder="Buscar regalo..."
+                aria-label="Buscar regalos"
+                className="h-10 w-full rounded-full border border-stone-200 bg-stone-50 pl-10 pr-4 text-sm text-stone-900 placeholder:text-stone-400 transition-all focus:border-[#A01C46] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#A01C46]/15"
+            />
+            {showSuggestions && focusedBox === box && suggestionDropdown}
+        </form>
+    );
+
     return (
-        <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md shadow-[0px_1px_8px_0px_rgba(160,28,70,0.05)] flex justify-center">
-            <div className="w-full max-w-[1280px] px-3 py-3 sm:px-6">
-                
-                {/* Header Mobile: Logo - Buscador (Centro) - Menú Hamburger */}
-                <div className="flex items-center justify-between gap-3 md:hidden">
-                    {/* Logo (Izquierda) */}
-                    <Link href="/" aria-label="Ir a inicio" className="flex-shrink-0">
-                        <Image
-                            src="/head.png"
-                            alt="Surprises Logo"
-                            width={48}
-                            height={48}
-                            className="rounded-full object-cover"
-                            priority
-                        />
-                    </Link>
-
-                    {/* Buscador (Centro) */}
-                    <form
-                        className="relative flex-1"
-                        role="search"
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            goToSearch(query);
-                        }}
-                    >
-                        <div className="relative w-full">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A01C46] pointer-events-none" />
-                            <input
-                                type="search"
-                                value={query}
-                                onChange={(event) => setQuery(event.target.value)}
-                                onFocus={() => handleFocus("mobile")}
-                                onBlur={handleBlur}
-                                placeholder="Buscar regalo..."
-                                aria-label="Buscar regalos"
-                                className="w-full h-10 rounded-full border border-[#A01C46]/20 bg-white pl-9 pr-3 text-xs text-stone-900 placeholder:text-[#A01C46]/50 shadow-sm transition-all focus:border-[#A01C46] focus:outline-none focus:ring-1 focus:ring-[#A01C46]/20"
-                            />
-                        </div>
-                        {showSuggestions && focusedBox === "mobile" && suggestionDropdown}
-                    </form>
-
-                    {/* Botón Hamburger (Derecha) */}
-                    <button
-                        aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
-                        aria-expanded={isMenuOpen}
-                        onClick={() => setIsMenuOpen((prev) => !prev)}
-                        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-[#A01C46]/15 bg-white text-[#1F1A1C] shadow-sm transition-transform active:scale-95"
-                    >
-                        <Menu size={20} />
-                    </button>
-                </div>
-
-                {/* Header Desktop */}
-                <div className="hidden md:flex md:items-center md:justify-between md:gap-6">
-                    <Link href="/" aria-label="Ir a inicio" className="flex-shrink-0">
-                        <Image
-                            src="/head.png"
-                            alt="Surprises Logo"
-                            width={64}
-                            height={64}
-                            className="rounded-full object-cover"
-                            priority
-                        />
-                    </Link>
-
-                    <form
-                        className="relative flex-1 max-w-[500px] ml-4"
-                        role="search"
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            goToSearch(query);
-                        }}
-                    >
-                        <div className="relative flex items-center w-full">
-                            <Search className="absolute left-4 w-4 h-4 text-[#A01C46] pointer-events-none" />
-                            <input
-                                type="search"
-                                value={query}
-                                onChange={(event) => setQuery(event.target.value)}
-                                onFocus={() => handleFocus("desktop")}
-                                onBlur={handleBlur}
-                                placeholder="Encuentra el regalo perfecto..."
-                                aria-label="Buscar regalos"
-                                className="w-full h-11 pl-11 pr-4 bg-white rounded-full border-2 border-[#A01C46]/20 text-sm text-stone-900 placeholder:text-[#A01C46]/50 focus:outline-none focus:border-[#A01C46] focus:ring-2 focus:ring-[#A01C46]/20 transition-all shadow-sm hover:border-[#A01C46]/30"
-                            />
-                        </div>
-                        {showSuggestions && focusedBox === "desktop" && suggestionDropdown}
-                    </form>
-
-                    <div className="flex items-center gap-6 flex-shrink-0">
-                        <Link href="/tienda" aria-label="Ir a la tienda">
-                            <div className="flex items-center gap-2 rounded-full bg-pink-800 px-5 py-2.5 text-white transition-colors hover:bg-pink-900">
-                                <ShoppingCart size={18} />
-                                <span className="text-sm font-semibold tracking-wide">Tienda</span>
-                            </div>
-                        </Link>
-
-                        <button
-                            onClick={openCart}
-                            aria-label="Ir al carrito de compras"
-                            className="relative p-2 text-[#584144] transition-colors hover:text-pink-800"
-                        >
-                            <ShoppingCart size={26} />
-                            <CartCountBadge />
-                        </button>
-
-                        <div className="relative flex-shrink-0">
-                            <Image
-                                src="/surprises.png"
-                                alt="Avatar de usuario"
-                                width={40}
-                                height={40}
-                                className="rounded-full object-contain"
-                            />
-                        </div>
-                    </div>
+        <header className="sticky top-0 z-40 w-full bg-white shadow-[0px_1px_10px_0px_rgba(160,28,70,0.08)]">
+            {/* Barra superior: nuestro valor agregado */}
+            <div className="w-full bg-[#A01C46] text-white">
+                <div className="mx-auto flex h-8 w-full max-w-[1280px] items-center justify-center px-4 text-[12px] font-medium tracking-wide sm:text-[13px]">
+                    <span key={propuesta} className="animate-[fadeIn_0.5s_ease] md:hidden">
+                        {PROPUESTAS[propuesta]}
+                    </span>
+                    <span className="hidden items-center gap-5 md:flex">
+                        {PROPUESTAS.map((texto, i) => (
+                            <span key={texto} className="flex items-center gap-5">
+                                {i > 0 && <span className="text-white/40">•</span>}
+                                {texto}
+                            </span>
+                        ))}
+                    </span>
                 </div>
             </div>
+
+            <div className="mx-auto w-full max-w-[1280px] px-3 sm:px-6">
+                {/* Fila principal: menú / buscador · logo al centro · WhatsApp y carrito */}
+                <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 md:h-20">
+                    <div className="flex items-center gap-3">
+                        <button
+                            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+                            aria-expanded={isMenuOpen}
+                            onClick={() => setIsMenuOpen((prev) => !prev)}
+                            className="flex h-10 items-center gap-1.5 rounded-full border-2 border-[#C1375D] px-3 text-[#C1375D] transition-colors hover:bg-rose-50 active:scale-95 md:hidden"
+                        >
+                            <Menu size={20} />
+                        </button>
+                        <div className="hidden w-full max-w-[340px] md:block">{searchInput("desktop")}</div>
+                    </div>
+
+                    <Link href="/" aria-label="Ir a inicio" className="justify-self-center">
+                        <Image
+                            src="/head.png"
+                            alt="Surprises Perú, tienda de regalos"
+                            width={150}
+                            height={150}
+                            className="h-14 w-14 object-contain md:h-[76px] md:w-[76px]"
+                            priority
+                        />
+                    </Link>
+
+                    <div className="flex items-center justify-end gap-2 sm:gap-4">
+                        {whatsappUrl && (
+                            <a
+                                href={whatsappUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hidden items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1fb457] lg:flex"
+                            >
+                                <MessageCircle size={17} className="fill-white" />
+                                Pedir por WhatsApp
+                            </a>
+                        )}
+                        <button
+                            onClick={openCart}
+                            aria-label="Abrir el carrito de compras"
+                            className="relative flex h-10 w-10 items-center justify-center rounded-full text-[#41373A] transition-colors hover:bg-rose-50 hover:text-[#C1375D]"
+                        >
+                            <ShoppingCart size={24} />
+                            <CartCountBadge />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Buscador en el celular */}
+                <div className="pb-3 md:hidden">{searchInput("mobile")}</div>
+            </div>
+
+            {/* Menú de escritorio */}
+            <nav className="hidden border-t border-stone-100 md:block" aria-label="Categorías">
+                <div className="mx-auto flex h-12 w-full max-w-[1280px] items-center justify-between px-6">
+                    <div className="flex items-center gap-8">
+                        {menuItems.map(({ href, label }) => (
+                            <Link
+                                key={label}
+                                href={href}
+                                className="text-sm font-medium text-stone-700 transition-colors hover:text-[#C1375D]"
+                            >
+                                {label}
+                            </Link>
+                        ))}
+                    </div>
+                    {whatsappUrl && (
+                        <a
+                            href={whatsappUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-full border-2 border-[#C1375D] px-4 py-1 text-sm font-semibold text-[#C1375D] transition-colors hover:bg-[#C1375D] hover:text-white"
+                        >
+                            Personaliza tu regalo
+                        </a>
+                    )}
+                </div>
+            </nav>
 
             {/* FULLSCREEN MOBILE OVERLAY (PORTAL) */}
             {isMenuOpen && mounted && createPortal(
@@ -281,11 +294,11 @@ export default function Header() {
                         <div className="flex items-center justify-between border-b border-white/10 pb-4">
                             <Link href="/" aria-label="Ir a inicio" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3">
                                 <Image
-                                    src="/head.png"
-                                    alt="Surprises Logo"
+                                    src="/surprises.png"
+                                    alt="Surprises"
                                     width={44}
                                     height={44}
-                                    className="rounded-full object-cover ring-2 ring-pink-500/30"
+                                    className="rounded-full bg-white object-contain p-1"
                                 />
                                 <span className="text-xl font-serif text-white font-medium tracking-wide">Surprises</span>
                             </Link>
@@ -356,20 +369,6 @@ export default function Header() {
                                     <ChevronRight size={18} />
                                 </a>
                             )}
-                        </div>
-
-                        {/* Pie de menú (Perfil) */}
-                        <div className="mt-auto pt-6 border-t border-white/10 flex justify-center">
-                            <div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-white/90 shadow-inner">
-                                <Image
-                                    src="/surprises.png"
-                                    alt="Avatar de usuario"
-                                    width={32}
-                                    height={32}
-                                    className="rounded-full object-contain ring-1 ring-white/30"
-                                />
-                                <span className="text-sm font-medium">Hola, Surprises</span>
-                            </div>
                         </div>
 
                     </div>

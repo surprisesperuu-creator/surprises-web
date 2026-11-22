@@ -11,7 +11,6 @@ import {
     MessageCircle,
     QrCode,
     ShoppingBag,
-    ShoppingCart,
     Store,
 } from "lucide-react";
 
@@ -124,7 +123,7 @@ export default function Footer() {
                     <ul className="flex flex-col gap-3 text-sm">
                         <li>
                             <a
-                                href="surprisesperuu@gmail.com"
+                                href="mailto:surprisesperuu@gmail.com"
                                 className="flex items-center gap-2.5 text-stone-200/80 hover:text-pink-300 transition-colors w-fit"
                             >
                                 <Mail size={16} className="text-pink-300 shrink-0" />
@@ -145,8 +144,8 @@ export default function Footer() {
                         <li className="flex items-start gap-2.5 text-stone-200/80">
                             <MapPin size={16} className="text-pink-300 shrink-0 mt-0.5" />
                             <span>
-                                Av. Principal 123, Miraflores<br />
-                                Lima, Perú
+                                Lima, Perú<br />
+                                Envíos a todo Lima
                             </span>
                         </li>
                     </ul>

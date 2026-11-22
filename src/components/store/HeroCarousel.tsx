@@ -66,12 +66,10 @@ export function HeroCarousel({ slides, loading }: HeroCarouselProps) {
           <AppImage
             src={image.image_url}
             alt={image.title || "Hero Regalos Premium"}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-center sm:object-[75%_center]"
           />
         </div>
       ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent" />
-      <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
 
       {loading ? null : images.length > 1 ? (
         <>
@@ -79,7 +77,7 @@ export function HeroCarousel({ slides, loading }: HeroCarouselProps) {
             type="button"
             onClick={() => goTo(safeIndex - 1)}
             aria-label="Imagen anterior del Hero"
-            className="absolute left-4 top-1/2 z-10 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/80 text-stone-700 shadow-md backdrop-blur transition hover:bg-white"
+            className="absolute bottom-4 right-16 z-20 hidden size-10 cursor-pointer sm:flex items-center justify-center rounded-full bg-white/80 text-stone-700 shadow-md backdrop-blur transition hover:bg-white"
           >
             ‹
           </button>
@@ -87,11 +85,11 @@ export function HeroCarousel({ slides, loading }: HeroCarouselProps) {
             type="button"
             onClick={() => goTo(safeIndex + 1)}
             aria-label="Siguiente imagen del Hero"
-            className="absolute right-4 top-1/2 z-10 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/80 text-stone-700 shadow-md backdrop-blur transition hover:bg-white"
+            className="absolute bottom-4 right-4 z-20 hidden size-10 cursor-pointer sm:flex items-center justify-center rounded-full bg-white/80 text-stone-700 shadow-md backdrop-blur transition hover:bg-white"
           >
             ›
           </button>
-          <div className="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
+          <div className="absolute right-5 top-5 z-20 flex items-center gap-2">
             {images.map((image, position) => (
               <button
                 key={image.id}
