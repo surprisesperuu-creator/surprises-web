@@ -11,6 +11,8 @@ export interface Product {
   description: string | null;
   price: number;
   image_url: string | null;
+  /** Fotos adicionales (galería), sin la principal. */
+  images: string[];
   is_active: boolean;
   created_at: string;
   updated_at: string;

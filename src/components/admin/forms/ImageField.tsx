@@ -4,6 +4,7 @@ import { useRef, useState, type ChangeEvent } from "react";
 import { Check, CloudUpload, ImageOff, Link as LinkIcon, LoaderCircle, Upload } from "lucide-react";
 
 import { FormField, inputBaseClass } from "@/components/admin/forms/FormControls";
+import { uploadToCloudinary, type UploadFolder } from "@/lib/admin/cloudinary-upload";
 
 interface ImageFieldProps {
   value: string | null;
@@ -11,18 +12,8 @@ interface ImageFieldProps {
   error?: string;
   hint?: string;
   /** Carpeta de Cloudinary destino: "products" | "categories" | "hero". */
-  folder?: "products" | "categories" | "hero";
-}
-
-interface UploadSignatureResponse {
-  data: {
-    cloudName: string;
-    apiKey: string;
-    folder: string;
-    timestamp: number;
-    signature: string;
-  };
-  error: null;
+  folder?: UploadFolder;
+  label?: string;
 }
 
 type UploadMessage =
@@ -39,7 +30,7 @@ type UploadMessage =
  * 3. Con esa firma, el navegador sube el archivo directamente a Cloudinary.
  * 4. Se obtiene la `secure_url` y se pasa al formulario para persistirla.
  */
-export function ImageField({ value, onChange, error, hint, folder = "products" }: ImageFieldProps) {
+export function ImageField({ value, onChange, error, hint, folder = "products", label = "Imagen" }: ImageFieldProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState<UploadMessage>(null);
   const [uploading, setUploading] = useState(false);
@@ -57,49 +48,8 @@ export function ImageField({ value, onChange, error, hint, folder = "products" }
     setMessage(null);
 
     try {
-      // 1. Firma firmada desde el servidor.
-      const response = await fetch(`/api/upload?folder=${encodeURIComponent(folder)}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const body = (await response.json()) as
-        | UploadSignatureResponse
-        | { data: null; error: { message: string } };
-
-      if (!response.ok || body.error !== null || !body.data) {
-        const reason =
-          typeof body.error === "object" && body.error && body.error.message
-            ? body.error.message
-            : "No se pudo iniciar la subida";
-        throw new Error(reason);
-      }
-
-      const { cloudName, apiKey, folder: folderName, timestamp, signature } = body.data;
-
-      // 2. Subida directa a Cloudinary con la firma.
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("folder", folderName);
-      formData.append("timestamp", String(timestamp));
-      formData.append("api_key", apiKey);
-      formData.append("signature", signature);
-
-      const uploadResponse = await fetch(
-        `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
-        { method: "POST", body: formData }
-      );
-      const uploadBody = (await uploadResponse.json()) as {
-        secure_url?: string;
-        error?: { message?: string };
-      };
-
-      if (!uploadResponse.ok || !uploadBody.secure_url) {
-        throw new Error(
-          uploadBody.error?.message ?? "No se pudo subir la imagen a Cloudinary"
-        );
-      }
-
-      onChange(uploadBody.secure_url);
+      const url = await uploadToCloudinary(file, folder);
+      onChange(url);
       setMessage({ type: "success", text: "Imagen subida correctamente." });
     } catch (err) {
       setMessage({
@@ -113,7 +63,7 @@ export function ImageField({ value, onChange, error, hint, folder = "products" }
 
   const buttonLabel = uploading ? "Subiendo..." : value ? "Reemplazar" : "Subir";
 return (
-    <FormField label="Imagen" htmlFor="image-url" error={error} hint={hint}>
+    <FormField label={label} htmlFor="image-url" error={error} hint={hint}>
       <input
         ref={fileInputRef}
         type="file"

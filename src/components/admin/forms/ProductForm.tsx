@@ -12,6 +12,7 @@ import { useToast } from "@/lib/admin/toast";
 
 import { SelectField, TextAreaField, TextField } from "@/components/admin/forms/FormControls";
 import { ImageField } from "@/components/admin/forms/ImageField";
+import { GalleryField } from "@/components/admin/forms/GalleryField";
 
 interface ProductFormProps {
   mode: "create" | "edit";
@@ -25,12 +26,14 @@ interface FormValues {
   description: string;
   price: string;
   image_url: string;
+  images: string[];
 }
 
 /**
  * Formulario de producto (nuevo/editar). Valida en cliente con el mismo
  * esquema Zod que usa el backend y consume POST/PUT /api/products.
- * Los productos tienen: nombre, descripción, precio, categoría e imagen.
+ * Los productos tienen: nombre, descripción, precio, categoría, imagen
+ * principal y fotos adicionales.
  */
 export function ProductForm({ mode, initial, categories }: ProductFormProps) {
   const router = useRouter();
@@ -43,6 +46,7 @@ export function ProductForm({ mode, initial, categories }: ProductFormProps) {
     description: initial?.description ?? "",
     price: initial ? String(initial.price) : "",
     image_url: initial?.image_url ?? "",
+    images: initial?.images ?? [],
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -65,6 +69,7 @@ export function ProductForm({ mode, initial, categories }: ProductFormProps) {
       description: values.description || null,
       price: Number(values.price),
       image_url: values.image_url || null,
+      images: values.images,
     };
 
     const parsed = createProductSchema.safeParse(payload);
@@ -159,12 +164,22 @@ export function ProductForm({ mode, initial, categories }: ProductFormProps) {
 
       <ImageField
         folder="products"
+        label="Imagen principal"
         value={values.image_url}
         onChange={(image_url) => {
           setValues((prev) => ({ ...prev, image_url: image_url ?? "" }));
           setErrors((prev) => ({ ...prev, image_url: undefined }));
         }}
         error={errors.image_url}
+      />
+
+      <GalleryField
+        value={values.images}
+        onChange={(images) => {
+          setValues((prev) => ({ ...prev, images }));
+          setErrors((prev) => ({ ...prev, images: undefined }));
+        }}
+        error={errors.images}
       />
 
       {formError && (

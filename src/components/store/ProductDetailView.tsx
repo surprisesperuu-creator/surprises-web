@@ -4,11 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, Minus, Plus, ShoppingCart, Truck, ShieldCheck, MessageCircle } from "lucide-react";
 
-import { AppImage } from "@/components/AppImage";
 import { ProductCard } from "@/components/store/ProductCard";
 import { useCartStore } from "@/store/cart.store";
 import { formatPrice } from "@/lib/format";
 import { buildWhatsAppUrl } from "@/lib/store/whatsapp";
+import { descripcionDeProducto, fotosDeProducto } from "@/lib/store/product-extras";
+import { ProductGallery } from "@/components/store/ProductGallery";
 import type { ProductWithCategory } from "@/types/product";
 
 interface ProductDetailViewProps {
@@ -27,6 +28,10 @@ export function ProductDetailView({ product, related }: ProductDetailViewProps) 
   const openCart = useCartStore((state) => state.openCart);
   const [added, setAdded] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const description = product.description || descripcionDeProducto(product.id);
+  const images = Array.from(
+    new Set([product.image_url, ...product.images, ...fotosDeProducto(product.id)].filter((src): src is string => Boolean(src)))
+  );
 
   const whatsappUrl = buildWhatsAppUrl(
     `Hola, me interesa el producto "${product.name}" (${formatPrice(product.price)}). ¿Sigue disponible?`
@@ -79,20 +84,11 @@ export function ProductDetailView({ product, related }: ProductDetailViewProps) 
         <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start lg:gap-10">
           {/* Imagen (compacta, producto completo sin recorte gigante) */}
           <div className="lg:sticky lg:top-24">
-            <div className="relative overflow-hidden rounded-[28px] border border-stone-200/80 bg-white shadow-sm">
-              <div className="flex min-h-[280px] items-center justify-center bg-stone-100 p-4 sm:min-h-[320px] sm:p-6">
-                <AppImage
-                  src={product.image_url}
-                  alt={product.name}
-                  className="max-h-[300px] w-auto max-w-full rounded-2xl object-contain sm:max-h-[380px]"
-                />
-              </div>
-              {product.category && (
-                <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#A01C46] shadow-sm backdrop-blur">
-                  {product.category.name}
-                </span>
-              )}
-            </div>
+            <ProductGallery
+              images={images}
+              alt={product.name}
+              badge={product.category?.name}
+            />
             <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-stone-600">
               <div className="flex items-center gap-2 rounded-2xl border border-stone-200/80 bg-white px-3 py-2.5">
                 <Truck className="size-4 shrink-0 text-[#C1375D]" />
@@ -127,9 +123,9 @@ export function ProductDetailView({ product, related }: ProductDetailViewProps) 
               <span className="text-xs text-stone-500">Precio unitario</span>
             </div>
 
-            {product.description && (
+            {description && (
               <p className="whitespace-pre-line text-sm leading-relaxed text-stone-700 sm:text-base">
-                {product.description}
+                {description}
               </p>
             )}
 

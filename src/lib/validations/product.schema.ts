@@ -12,7 +12,8 @@ const MAX_PRICE = 9999999999.99;
  * - name obligatorio
  * - description opcional (hasta 1000 caracteres)
  * - price obligatorio y >= 0
- * - image_url opcional
+ * - image_url opcional (foto principal)
+ * - images opcional (fotos adicionales, hasta 12)
  * - is_active opcional (la BD aplica DEFAULT true)
  */
 export const createProductSchema = z.object({
@@ -35,6 +36,10 @@ export const createProductSchema = z.object({
   image_url: z
     .url("image_url debe ser una URL válida")
     .nullable()
+    .optional(),
+  images: z
+    .array(z.url("Cada foto debe ser una URL válida"))
+    .max(12, "Máximo 12 fotos adicionales")
     .optional(),
   is_active: z
     .boolean({ error: "is_active debe ser un valor booleano" })
