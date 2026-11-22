@@ -141,7 +141,7 @@ export default function Home() {
 
       {/* OCASIONES */}
       <section className="mx-auto w-full max-w-[1280px] px-4 pt-14 sm:px-6 sm:pt-16">
-        <h2 className="text-center text-2xl font-semibold text-stone-900 sm:text-3xl">
+        <h2 className="text-center font-display text-[28px] font-semibold text-stone-900 sm:text-4xl">
           Regalos para cada ocasión
         </h2>
         <div className="mt-8 grid grid-cols-3 justify-items-center gap-x-3 gap-y-6 sm:flex sm:justify-center sm:gap-8">
@@ -168,7 +168,7 @@ export default function Home() {
 
       {/* FAVORITOS */}
       <section className="mx-auto w-full max-w-[1280px] px-4 pt-14 sm:px-6 sm:pt-16">
-        <h2 className="text-center text-2xl font-semibold text-stone-900 sm:text-3xl">
+        <h2 className="text-center font-display text-[28px] font-semibold text-stone-900 sm:text-4xl">
           Los favoritos de Surprises
         </h2>
         <p className="mx-auto mt-2 max-w-[560px] text-center text-sm text-stone-500 sm:text-base">
@@ -240,7 +240,7 @@ export default function Home() {
       {/* VALOR AGREGADO */}
       <section className="mt-16 w-full bg-gradient-to-b from-white to-[#FFF2F5] py-14 sm:mt-20 sm:py-16">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6">
-          <h2 className="text-center text-2xl font-semibold text-stone-900 sm:text-3xl">
+          <h2 className="text-center font-display text-[28px] font-semibold text-stone-900 sm:text-4xl">
             Lo que nos hace diferentes
           </h2>
           <p className="mx-auto mt-2 max-w-[600px] text-center text-sm text-stone-500 sm:text-base">
@@ -257,7 +257,7 @@ export default function Home() {
                   <span className="flex size-14 items-center justify-center rounded-full bg-rose-100 text-[#C1375D]">
                     <Icono size={26} />
                   </span>
-                  <h3 className="text-base font-semibold text-stone-900 sm:text-lg">{valor.titulo}</h3>
+                  <h3 className="font-display text-lg font-semibold text-stone-900 sm:text-xl">{valor.titulo}</h3>
                   <p className="text-xs leading-relaxed text-stone-600 sm:text-sm">{valor.texto}</p>
                 </div>
               );
@@ -290,7 +290,7 @@ export default function Home() {
         <section className="w-full bg-[#FFF2F5] px-4 pb-14 sm:px-6">
           <div className="mx-auto flex w-full max-w-[1280px] flex-col items-start gap-5 rounded-[28px] bg-[#C1375D] p-7 text-white sm:flex-row sm:items-center sm:justify-between sm:p-10">
             <div>
-              <h2 className="text-2xl font-semibold sm:text-3xl">¿Tienes una idea en mente?</h2>
+              <h2 className="font-display text-[28px] font-semibold sm:text-4xl">¿Tienes una idea en mente?</h2>
               <p className="mt-1 text-sm text-white/85 sm:text-base">
                 Cuéntanos qué quieres regalar y lo personalizamos contigo.
               </p>

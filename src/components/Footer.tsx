@@ -94,7 +94,7 @@ export default function Footer() {
 
                 {/* Columna 2: Navegación Rápida */}
                 <div className="flex flex-col gap-4">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-200/60 font-serif">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-200/60">
                         Navegación
                     </h3>
                     <ul className="flex flex-col gap-3 text-sm">
@@ -117,7 +117,7 @@ export default function Footer() {
 
                 {/* Columna 3: Información de Contacto */}
                 <div className="flex flex-col gap-4">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-200/60 font-serif">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-200/60">
                         Contacto
                     </h3>
                     <ul className="flex flex-col gap-3 text-sm">
@@ -153,7 +153,7 @@ export default function Footer() {
 
                 {/* Columna 4: Horario de Atención */}
                 <div className="flex flex-col gap-4">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-200/60 font-serif">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-200/60">
                         Horario de Atención
                     </h3>
                     <div className="flex items-start gap-2.5 text-sm text-stone-200/80">

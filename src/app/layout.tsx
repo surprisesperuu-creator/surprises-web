@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { StoreLayout } from "@/components/StoreLayout";
 
 import "./globals.css";
 
-const inter = Inter({
+// Tipografías de Surprises:
+// - Plus Jakarta Sans (texto): letras abiertas y altas, se leen bien en el celular.
+// - Fraunces (títulos): serif cálida con remates suaves (eje SOFT), en armonía
+//   con las curvas redondeadas del logo.
+const cuerpo = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
+  variable: "--font-cuerpo",
   display: "swap",
 });
 
-const playfairDisplay = Playfair_Display({
+const titulos = Fraunces({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-playfair",
+  weight: "variable",
+  axes: ["SOFT", "opsz"],
+  variable: "--font-titulos",
   display: "swap",
 });
 
@@ -38,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${inter.variable} ${playfairDisplay.variable} antialiased`}
+      className={`${cuerpo.variable} ${titulos.variable} antialiased`}
     >
       <body>
         <StoreLayout>{children}</StoreLayout>

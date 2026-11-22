@@ -300,7 +300,7 @@ export default function Header() {
                                     height={44}
                                     className="rounded-full bg-white object-contain p-1"
                                 />
-                                <span className="text-xl font-serif text-white font-medium tracking-wide">Surprises</span>
+                                <span className="text-xl font-display text-white font-medium tracking-wide">Surprises</span>
                             </Link>
 
                             <button
