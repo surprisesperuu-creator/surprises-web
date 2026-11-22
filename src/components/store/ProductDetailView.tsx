@@ -18,8 +18,8 @@ interface ProductDetailViewProps {
 
 /**
  * Detalle de producto de la tienda pública.
- * Muestra únicamente datos reales del backend: imagen, nombre, precio y
- * categoría. El botón agrega al carrito (Zustand), abre el sidebar y
+ * Muestra únicamente datos reales del backend: imagen, nombre, precio,
+ * descripción y categoría. El botón agrega al carrito (Zustand), abre el sidebar y
  * muestra feedback visual.
  */
 export function ProductDetailView({ product, related }: ProductDetailViewProps) {
@@ -126,6 +126,12 @@ export function ProductDetailView({ product, related }: ProductDetailViewProps) 
               </span>
               <span className="text-xs text-stone-500">Precio unitario</span>
             </div>
+
+            {product.description && (
+              <p className="whitespace-pre-line text-sm leading-relaxed text-stone-700 sm:text-base">
+                {product.description}
+              </p>
+            )}
 
             {/* Cantidad + agregar */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

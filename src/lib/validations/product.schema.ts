@@ -10,6 +10,7 @@ const MAX_PRICE = 9999999999.99;
  * Payload para CREAR un producto.
  * - category_id obligatorio (debe existir; se valida contra la BD)
  * - name obligatorio
+ * - description opcional (hasta 1000 caracteres)
  * - price obligatorio y >= 0
  * - image_url opcional
  * - is_active opcional (la BD aplica DEFAULT true)
@@ -21,6 +22,12 @@ export const createProductSchema = z.object({
     .trim()
     .min(1, "El nombre es obligatorio")
     .max(200, "El nombre no puede superar los 200 caracteres"),
+  description: z
+    .string({ error: "La descripción debe ser un texto" })
+    .trim()
+    .max(1000, "La descripción no puede superar los 1000 caracteres")
+    .nullable()
+    .optional(),
   price: z
     .number({ error: "El precio debe ser un número" })
     .min(0, "El precio debe ser mayor o igual a 0")

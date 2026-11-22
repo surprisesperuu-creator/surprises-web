@@ -10,7 +10,7 @@ import { createProductSchema } from "@/lib/validations/product.schema";
 import { adminApi } from "@/lib/admin/api-client";
 import { useToast } from "@/lib/admin/toast";
 
-import { SelectField, TextField } from "@/components/admin/forms/FormControls";
+import { SelectField, TextAreaField, TextField } from "@/components/admin/forms/FormControls";
 import { ImageField } from "@/components/admin/forms/ImageField";
 
 interface ProductFormProps {
@@ -22,6 +22,7 @@ interface ProductFormProps {
 interface FormValues {
   category_id: string;
   name: string;
+  description: string;
   price: string;
   image_url: string;
 }
@@ -29,7 +30,7 @@ interface FormValues {
 /**
  * Formulario de producto (nuevo/editar). Valida en cliente con el mismo
  * esquema Zod que usa el backend y consume POST/PUT /api/products.
- * Los productos solo tienen: nombre, precio, categoría e imagen.
+ * Los productos tienen: nombre, descripción, precio, categoría e imagen.
  */
 export function ProductForm({ mode, initial, categories }: ProductFormProps) {
   const router = useRouter();
@@ -39,6 +40,7 @@ export function ProductForm({ mode, initial, categories }: ProductFormProps) {
   const [values, setValues] = useState<FormValues>({
     category_id: initial?.category_id ?? "",
     name: initial?.name ?? "",
+    description: initial?.description ?? "",
     price: initial ? String(initial.price) : "",
     image_url: initial?.image_url ?? "",
   });
@@ -48,7 +50,7 @@ export function ProductForm({ mode, initial, categories }: ProductFormProps) {
 
   const setField =
     (field: keyof FormValues) =>
-    (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       setValues((prev) => ({ ...prev, [field]: event.target.value }));
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     };
@@ -60,6 +62,7 @@ export function ProductForm({ mode, initial, categories }: ProductFormProps) {
     const payload = {
       category_id: values.category_id,
       name: values.name,
+      description: values.description || null,
       price: Number(values.price),
       image_url: values.image_url || null,
     };
@@ -126,6 +129,16 @@ export function ProductForm({ mode, initial, categories }: ProductFormProps) {
         error={errors.name}
         placeholder="P. ej. Caja de Rosas Especial"
         required
+      />
+
+      <TextAreaField
+        label="Descripción"
+        name="description"
+        value={values.description}
+        onChange={setField("description")}
+        error={errors.description}
+        rows={5}
+        placeholder="Qué incluye, medidas, personalización… (opcional)"
       />
 
       <div className="max-w-xs">
