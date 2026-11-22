@@ -1,9 +1,9 @@
 'use client';
 import Link from "next/link";
 import Image from "next/image";
-import { Search, ShoppingCart, Menu, X, House, Gift, ChevronRight, Sparkles, CalendarHeart, TreePine, MessageCircle } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, House, Gift, ChevronRight, Sparkles, TreePine, MessageCircle, Heart, Cake, GraduationCap, Flower2, Car } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { useCartStore } from "@/store/cart.store";
 import { CartCountBadge } from "@/components/CartCountBadge";
@@ -147,12 +147,18 @@ export default function Header() {
     }, [isMenuOpen]);
 
     const menuItems = [
-        { href: "/", label: "Inicio", icon: House },
         { href: "/tienda", label: "Todos los regalos", icon: Gift },
-        { href: "/tienda?q=navide", label: "Navidad", icon: TreePine },
-        { href: "/tienda?q=cuadro", label: "Cuadros 3D", icon: Sparkles },
-        { href: "/tienda?q=calendario", label: "Calendarios", icon: CalendarHeart },
+        { href: "/ocasion/navidad", label: "Navidad", icon: TreePine },
+        { href: "/ocasion/amor", label: "Amor", icon: Heart },
+        { href: "/ocasion/cumpleanos", label: "Cumpleaños", icon: Cake },
+        { href: "/ocasion/graduacion", label: "Graduación", icon: GraduationCap },
+        { href: "/ocasion/para-ella", label: "Para ella", icon: Flower2 },
+        { href: "/ocasion/para-el", label: "Para él", icon: Car },
     ];
+    // El menú del celular también lleva "Inicio".
+    const mobileMenuItems = [{ href: "/", label: "Inicio", icon: House }, ...menuItems];
+    const pathname = usePathname();
+    const isActive = (href: string) => (href === "/tienda" ? pathname === "/tienda" : pathname.startsWith(href));
 
     // Barra superior: en el celular rota una frase; en escritorio se ven todas.
     const [propuesta, setPropuesta] = useState(0);
@@ -188,7 +194,7 @@ export default function Header() {
     return (
         <header className="sticky top-0 z-40 w-full bg-white shadow-[0px_1px_10px_0px_rgba(160,28,70,0.08)]">
             {/* Barra superior: nuestro valor agregado */}
-            <div className="w-full bg-[#A01C46] text-white">
+            <div className="w-full bg-[#5c0f2a] text-white">
                 <div className="mx-auto flex h-8 w-full max-w-[1280px] items-center justify-center px-4 text-[12px] font-medium tracking-wide sm:text-[13px]">
                     <span key={propuesta} className="animate-[fadeIn_0.5s_ease] md:hidden">
                         {PROPUESTAS[propuesta]}
@@ -257,27 +263,37 @@ export default function Header() {
                 <div className="pb-3 md:hidden">{searchInput("mobile")}</div>
             </div>
 
-            {/* Menú de escritorio */}
-            <nav className="hidden border-t border-stone-100 md:block" aria-label="Categorías">
-                <div className="mx-auto flex h-12 w-full max-w-[1280px] items-center justify-between px-6">
-                    <div className="flex items-center gap-8">
-                        {menuItems.map(({ href, label }) => (
-                            <Link
-                                key={label}
-                                href={href}
-                                className="text-sm font-medium text-stone-700 transition-colors hover:text-[#C1375D]"
-                            >
-                                {label}
-                            </Link>
-                        ))}
+            {/* Menú de escritorio: franja de color para que destaque */}
+            <nav className="hidden bg-gradient-to-r from-[#C1375D] to-[#A01C46] md:block" aria-label="Categorías">
+                <div className="mx-auto flex h-[52px] w-full max-w-[1280px] items-center justify-between gap-4 px-6">
+                    <div className="flex items-center gap-1 lg:gap-2">
+                        {menuItems.map(({ href, label, icon: Icon }) => {
+                            const active = isActive(href);
+                            return (
+                                <Link
+                                    key={label}
+                                    href={href}
+                                    aria-current={active ? "page" : undefined}
+                                    className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[14px] font-semibold transition-all ${
+                                        active
+                                            ? "bg-white text-[#A01C46] shadow-sm"
+                                            : "text-white hover:bg-white/15"
+                                    }`}
+                                >
+                                    <Icon size={16} strokeWidth={2.2} />
+                                    {label}
+                                </Link>
+                            );
+                        })}
                     </div>
                     {whatsappUrl && (
                         <a
                             href={whatsappUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="rounded-full border-2 border-[#C1375D] px-4 py-1 text-sm font-semibold text-[#C1375D] transition-colors hover:bg-[#C1375D] hover:text-white"
+                            className="flex shrink-0 items-center gap-1.5 rounded-full bg-white px-4 py-1.5 text-sm font-bold text-[#A01C46] shadow-md transition-transform hover:scale-[1.04]"
                         >
+                            <Sparkles size={16} />
                             Personaliza tu regalo
                         </a>
                     )}
@@ -314,7 +330,7 @@ export default function Header() {
 
                         {/* Opciones de Navegación */}
                         <nav className="mt-8 flex flex-col gap-3">
-                            {menuItems.map(({ href, label, icon: Icon }) => (
+                            {mobileMenuItems.map(({ href, label, icon: Icon }) => (
                                 <Link
                                     key={label}
                                     href={href}

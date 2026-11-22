@@ -118,7 +118,7 @@ export default function Home() {
 
         {/* Banner lateral de Navidad */}
         <EnlaceDestino
-          destino={destino(navidad)}
+          destino={{ href: `/ocasion/${navidad.slug}`, externo: false }}
           label="Ver regalos de Navidad"
           className="group relative block h-48 overflow-hidden rounded-[28px] bg-rose-100 sm:h-56 lg:h-auto"
         >
@@ -140,15 +140,15 @@ export default function Home() {
       </section>
 
       {/* OCASIONES */}
-      <section className="mx-auto w-full max-w-[1280px] px-4 pt-14 sm:px-6 sm:pt-16">
+      <section id="ocasiones" className="mx-auto w-full max-w-[1280px] scroll-mt-40 px-4 pt-14 sm:px-6 sm:pt-16">
         <h2 className="text-center font-display text-[28px] font-semibold text-stone-900 sm:text-4xl">
           Regalos para cada ocasión
         </h2>
         <div className="mt-8 grid grid-cols-3 justify-items-center gap-x-3 gap-y-6 sm:flex sm:justify-center sm:gap-8">
           {OCASIONES.map((ocasion) => (
-            <EnlaceDestino
-              key={ocasion.nombre}
-              destino={destino(ocasion)}
+            <Link
+              key={ocasion.slug}
+              href={`/ocasion/${ocasion.slug}`}
               className="group flex w-[96px] flex-col items-center gap-2.5 sm:w-[118px]"
             >
               <span className="block size-[88px] overflow-hidden rounded-full bg-rose-100 ring-4 ring-rose-100 transition-all group-hover:ring-[#F5BECC] sm:size-[118px]">
@@ -161,7 +161,7 @@ export default function Home() {
               <span className="font-display text-[15px] font-semibold text-[#C1375D] sm:text-base">
                 {ocasion.nombre}
               </span>
-            </EnlaceDestino>
+            </Link>
           ))}
         </div>
       </section>
