@@ -81,7 +81,7 @@ export default function Home() {
       <section className="mx-auto grid w-full max-w-[1280px] gap-4 px-4 pt-4 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:pt-6">
         <div className="relative h-[480px] overflow-hidden rounded-[28px] bg-rose-50 sm:h-[440px]">
           <HeroCarousel slides={heroQuery.data ?? []} loading={heroQuery.loading} />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white via-white/75 to-transparent sm:bg-gradient-to-r sm:from-white/95 sm:via-white/70 sm:to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white from-35% via-white/90 to-white/10 sm:bg-gradient-to-r sm:from-0% sm:from-white/95 sm:via-white/70 sm:to-transparent" />
 
           <div className="relative z-10 flex h-full max-w-[560px] flex-col justify-end gap-4 p-6 sm:justify-center sm:p-10">
             <span className="w-fit rounded-full bg-[#A01C46] px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-white">
