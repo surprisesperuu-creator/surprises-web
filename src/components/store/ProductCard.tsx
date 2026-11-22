@@ -7,6 +7,7 @@ import { Check, Minus, Plus } from "lucide-react";
 import { AppImage } from "@/components/AppImage";
 import { formatPrice } from "@/lib/format";
 import { miniatura } from "@/lib/store/home-content";
+import { fotosDeProducto } from "@/lib/store/product-extras";
 import { useCartStore } from "@/store/cart.store";
 import type { ProductWithCategory } from "@/types/product";
 
@@ -26,6 +27,7 @@ export function ProductCard({ product, delay = 0 }: ProductCardProps) {
   const openCart = useCartStore((state) => state.openCart);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const segundaFoto = fotosDeProducto(product.id)[0];
 
   const addToCart = () => {
     for (let index = 0; index < quantity; index += 1) {
@@ -62,6 +64,13 @@ export function ProductCard({ product, delay = 0 }: ProductCardProps) {
             alt={product.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          {segundaFoto && (
+            <AppImage
+              src={miniatura(segundaFoto, 600, 600)}
+              alt={`${product.name} (otra foto)`}
+              className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            />
+          )}
           <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#A01C46] shadow-sm">
             Personalizado
           </span>

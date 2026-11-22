@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -35,6 +36,20 @@ const ICONOS_VALOR: Record<(typeof VALORES)[number]["clave"], LucideIcon> = {
   mensaje: Mail,
   envio: Truck,
 };
+
+/** Título de sección: etiqueta con el lazo del logo, título y bajada. */
+function TituloSeccion({ etiqueta, titulo, bajada }: { etiqueta: string; titulo: string; bajada?: string }) {
+  return (
+    <div className="flex flex-col items-center text-center">
+      <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[#C1375D]">
+        <Image src="/surprises.png" alt="" width={22} height={22} className="h-[22px] w-[22px] object-contain" />
+        {etiqueta}
+      </span>
+      <h2 className="mt-2 font-display text-[28px] font-semibold leading-tight text-stone-900 sm:text-4xl">{titulo}</h2>
+      {bajada && <p className="mt-2 max-w-[580px] text-sm text-stone-500 sm:text-base">{bajada}</p>}
+    </div>
+  );
+}
 
 /** Enlace interno (tienda) o externo (WhatsApp) según el destino. */
 function EnlaceDestino({
@@ -79,24 +94,29 @@ export default function Home() {
     <div className="w-full overflow-x-hidden bg-white">
       {/* HERO: banner principal + banner de Navidad */}
       <section className="mx-auto grid w-full max-w-[1280px] gap-4 px-4 pt-4 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:pt-6">
-        <div className="relative h-[480px] overflow-hidden rounded-[28px] bg-rose-50 sm:h-[440px]">
-          <HeroCarousel slides={heroQuery.data ?? []} loading={heroQuery.loading} />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white from-35% via-white/90 to-white/10 sm:bg-gradient-to-r sm:from-0% sm:from-white/95 sm:via-white/70 sm:to-transparent" />
-
-          <div className="relative z-10 flex h-full max-w-[560px] flex-col justify-end gap-4 p-6 sm:justify-center sm:p-10">
-            <span className="w-fit rounded-full bg-[#A01C46] px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-white">
+        <div className="grid overflow-hidden rounded-[28px] bg-gradient-to-br from-[#FFE4EC] via-[#FFF2F5] to-white shadow-[0_10px_40px_-20px_rgba(160,28,70,0.35)] sm:min-h-[440px] sm:grid-cols-[1.3fr_1fr]">
+          {/* Texto sobre panel rosado con el lazo de marca de fondo */}
+          <div className="relative order-2 flex flex-col justify-center gap-4 overflow-hidden p-6 sm:order-1 sm:p-10">
+            <Image
+              src="/surprises.png"
+              alt=""
+              width={320}
+              height={320}
+              className="pointer-events-none absolute -bottom-16 -right-16 h-64 w-64 rotate-[-12deg] object-contain opacity-[0.07]"
+            />
+            <span className="relative w-fit rounded-full bg-[#A01C46] px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-white">
               Regalos personalizados · Lima
             </span>
-            <h1 className="font-display text-[34px] font-bold leading-[1.1] text-stone-900 sm:text-5xl">
-              Regalos con <span className="text-[#C1375D]">SUS fotos</span>, hechos a mano
+            <h1 className="relative font-display text-[34px] font-bold leading-[1.08] text-stone-900 sm:text-[42px] xl:text-[50px]">
+              Regalos con <span className="italic text-[#C1375D]">SUS fotos</span>, hechos a mano
             </h1>
-            <p className="max-w-[440px] text-[15px] leading-relaxed text-stone-700 sm:text-base">
+            <p className="relative max-w-[440px] text-[15px] leading-relaxed text-stone-600 sm:text-base">
               Cuadros 3D con luces, calendarios y cajas sorpresa que no va a encontrar en ninguna otra tienda.
             </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="relative flex w-full max-w-[360px] flex-col gap-3">
               <Link
                 href="/tienda"
-                className="flex items-center justify-center gap-2 rounded-full bg-[#C1375D] px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#C1375D]/25 transition-all hover:bg-[#7A1734] active:scale-95"
+                className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#C1375D] px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#C1375D]/30 transition-all hover:bg-[#7A1734] active:scale-95"
               >
                 Ver regalos
                 <ArrowRight size={17} />
@@ -106,13 +126,18 @@ export default function Home() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 rounded-full border-2 border-[#C1375D] bg-white px-7 py-3 text-sm font-semibold text-[#C1375D] transition-all hover:bg-rose-50 active:scale-95"
+                  className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-[#C1375D] bg-white px-7 py-3 text-sm font-semibold text-[#C1375D] transition-all hover:bg-rose-50 active:scale-95"
                 >
                   <MessageCircle size={17} />
                   Personalízalo por WhatsApp
                 </a>
               )}
             </div>
+          </div>
+
+          {/* Fotos reales a todo color */}
+          <div className="relative order-1 h-72 sm:order-2 sm:h-auto">
+            <HeroCarousel slides={heroQuery.data ?? []} loading={heroQuery.loading} />
           </div>
         </div>
 
@@ -139,11 +164,29 @@ export default function Home() {
         </EnlaceDestino>
       </section>
 
+      {/* FRANJA DE CONFIANZA */}
+      <section className="mx-auto mt-4 grid w-full max-w-[1280px] grid-cols-2 gap-3 px-4 sm:px-6 lg:grid-cols-4">
+        {[
+          { Icono: Camera, texto: "Con SUS fotos" },
+          { Icono: HandHeart, texto: "Hecho a mano" },
+          { Icono: Truck, texto: "Envíos a todo Lima" },
+          { Icono: MessageCircle, texto: "Asesoría por WhatsApp" },
+        ].map(({ Icono, texto }) => (
+          <div
+            key={texto}
+            className="flex items-center gap-3 rounded-2xl border border-rose-100 bg-white px-4 py-3 shadow-sm"
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#FFE4EC] text-[#C1375D]">
+              <Icono size={18} />
+            </span>
+            <span className="text-[13px] font-semibold text-stone-800 sm:text-sm">{texto}</span>
+          </div>
+        ))}
+      </section>
+
       {/* OCASIONES */}
       <section id="ocasiones" className="mx-auto w-full max-w-[1280px] scroll-mt-40 px-4 pt-14 sm:px-6 sm:pt-16">
-        <h2 className="text-center font-display text-[28px] font-semibold text-stone-900 sm:text-4xl">
-          Regalos para cada ocasión
-        </h2>
+        <TituloSeccion etiqueta="Ocasiones" titulo="Regalos para cada ocasión" bajada="Elige para quién es y te mostramos ideas reales." />
         <div className="mt-8 grid grid-cols-3 justify-items-center gap-x-3 gap-y-6 sm:flex sm:justify-center sm:gap-8">
           {OCASIONES.map((ocasion) => (
             <Link
@@ -151,12 +194,14 @@ export default function Home() {
               href={`/ocasion/${ocasion.slug}`}
               className="group flex w-[96px] flex-col items-center gap-2.5 sm:w-[118px]"
             >
-              <span className="block size-[88px] overflow-hidden rounded-full bg-rose-100 ring-4 ring-rose-100 transition-all group-hover:ring-[#F5BECC] sm:size-[118px]">
-                <AppImage
-                  src={miniatura(ocasion.imagen, 300, 300)}
-                  alt={ocasion.nombre}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
+              <span className="block rounded-full bg-gradient-to-tr from-[#F5BECC] via-[#E64980] to-[#A01C46] p-[3px] transition-transform duration-300 group-hover:scale-105">
+                <span className="block size-[84px] overflow-hidden rounded-full border-[3px] border-white bg-rose-100 sm:size-[112px]">
+                  <AppImage
+                    src={miniatura(ocasion.imagen, 300, 300)}
+                    alt={ocasion.nombre}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                </span>
               </span>
               <span className="font-display text-[15px] font-semibold text-[#C1375D] sm:text-base">
                 {ocasion.nombre}
@@ -168,12 +213,7 @@ export default function Home() {
 
       {/* FAVORITOS */}
       <section className="mx-auto w-full max-w-[1280px] px-4 pt-14 sm:px-6 sm:pt-16">
-        <h2 className="text-center font-display text-[28px] font-semibold text-stone-900 sm:text-4xl">
-          Los favoritos de Surprises
-        </h2>
-        <p className="mx-auto mt-2 max-w-[560px] text-center text-sm text-stone-500 sm:text-base">
-          Elige tu regalo y nosotros lo armamos con sus fotos.
-        </p>
+        <TituloSeccion etiqueta="Los más pedidos" titulo="Los favoritos de Surprises" bajada="Elige tu regalo y nosotros lo armamos con sus fotos." />
 
         <div className="mt-8">
           {productsQuery.loading ? (
@@ -232,6 +272,10 @@ export default function Home() {
             <div className="absolute inset-y-0 right-0 flex flex-col items-end justify-center gap-0 p-6 text-right text-white">
               <span className="font-display text-2xl font-medium italic leading-none sm:text-3xl">{vitrina.linea1}</span>
               <span className="font-display text-3xl font-bold leading-tight sm:text-4xl">{vitrina.linea2}</span>
+              <span className="mt-3 flex items-center gap-1.5 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-[#A01C46] shadow-sm transition-transform group-hover:translate-x-[-4px]">
+                Ver más
+                <ArrowRight size={14} />
+              </span>
             </div>
           </EnlaceDestino>
         ))}
@@ -240,12 +284,11 @@ export default function Home() {
       {/* VALOR AGREGADO */}
       <section className="mt-16 w-full bg-gradient-to-b from-white to-[#FFF2F5] py-14 sm:mt-20 sm:py-16">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6">
-          <h2 className="text-center font-display text-[28px] font-semibold text-stone-900 sm:text-4xl">
-            Lo que nos hace diferentes
-          </h2>
-          <p className="mx-auto mt-2 max-w-[600px] text-center text-sm text-stone-500 sm:text-base">
-            No vendemos regalos de catálogo: cada uno se arma para una sola persona.
-          </p>
+          <TituloSeccion
+            etiqueta="Nuestro valor agregado"
+            titulo="Lo que nos hace diferentes"
+            bajada="No vendemos regalos de catálogo: cada uno se arma para una sola persona."
+          />
           <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
             {VALORES.map((valor) => {
               const Icono = ICONOS_VALOR[valor.clave];

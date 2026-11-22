@@ -66,7 +66,7 @@ export function HeroCarousel({ slides, loading }: HeroCarouselProps) {
           <AppImage
             src={image.image_url}
             alt={image.title || "Hero Regalos Premium"}
-            className="h-full w-full object-cover object-center sm:object-[75%_center]"
+            className="h-full w-full object-cover object-center"
           />
         </div>
       ))}
