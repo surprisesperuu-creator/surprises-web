@@ -9,6 +9,7 @@ import { ProductCard } from "@/components/store/ProductCard";
 import { useCartStore } from "@/store/cart.store";
 import { formatPrice } from "@/lib/format";
 import { buildWhatsAppUrl } from "@/lib/store/whatsapp";
+import { descripcionDeProducto } from "@/lib/store/product-descriptions";
 import type { ProductWithCategory } from "@/types/product";
 
 interface ProductDetailViewProps {
@@ -27,6 +28,7 @@ export function ProductDetailView({ product, related }: ProductDetailViewProps) 
   const openCart = useCartStore((state) => state.openCart);
   const [added, setAdded] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const description = descripcionDeProducto(product.id);
 
   const whatsappUrl = buildWhatsAppUrl(
     `Hola, me interesa el producto "${product.name}" (${formatPrice(product.price)}). ¿Sigue disponible?`
@@ -126,6 +128,12 @@ export function ProductDetailView({ product, related }: ProductDetailViewProps) 
               </span>
               <span className="text-xs text-stone-500">Precio unitario</span>
             </div>
+
+            {description && (
+              <p className="whitespace-pre-line text-sm leading-relaxed text-stone-700 sm:text-base">
+                {description}
+              </p>
+            )}
 
             {/* Cantidad + agregar */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
